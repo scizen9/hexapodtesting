@@ -14,6 +14,7 @@ def transform(pidevice, direction):
     """
     home(pidevice)
     pidevice.MOV({direction: 0.500})
+    print(pidevice.qPOS())
     sleep(1)
 
     home(pidevice)

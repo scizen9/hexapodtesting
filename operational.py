@@ -3,10 +3,6 @@ from time import sleep
 
 # TODO: "operational.py" serves as "main.py" for "TODO" purposes.
 
-# TODO: Upload to GitHub for safe-keeping.
-# TODO: Script "Measuring pitch, yaw, and roll angles".
-# TODO: Script "Measuring flexure of the hexapod".
-
 # TODO: Fix variable "pidevice" confusion in all ".py" files.
 # TODO: Verify whether ".MOV()" positions are in millimeters (mm).
 # TODO: Verify whether ".InterfaceSetupDlg()" requires "key=".

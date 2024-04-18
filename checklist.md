@@ -21,3 +21,5 @@ In order:
 - **range0.py** checks M2 and M5.
 - **resolution.py** checks M3 and M6.
 - **repeatability.py** checks M4 and M7.
+- **pitchyawroll.py** measures roll angle.
+- **flexure.py** measures flexure.
