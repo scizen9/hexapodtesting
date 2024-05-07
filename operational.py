@@ -34,7 +34,7 @@ def increment_req(pidevice, direction):
     a = 0
     while a != 0.05:  # Final position.
         a += 0.002  # Increments to obtain final position.
-        pidevice.move({direction: a})
+        pidevice.MOV({direction: a})
         print(pidevice.qPOS())
         sleep(1)  # Prevents hexapod from instantly moving to 50 microns. Units: (second).
 
