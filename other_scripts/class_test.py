@@ -1,6 +1,9 @@
 from pipython import GCSDevice, pitools
 from time import sleep
 import random
+"""
+Test script for treating hexapod as a class
+"""
 
 
 class PiDevice:
