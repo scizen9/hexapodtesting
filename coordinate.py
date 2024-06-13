@@ -1,27 +1,48 @@
 from pipython import GCSDevice
-from time import sleep
-from operational import home
+from serial import Serial
+from f import home, move, position, zero, read
+import numpy as np
+
+with GCSDevice() as pidevice:
+    with Serial("/dev/ttyACM0", 115200) as ser:
+        pidevice.ConnectRS232("/dev/ttyUSB0", 115200)
+
+        pos = [[0.5, 0, 0], [0, 0.5, 0], [0, 0, 0.5]]
+        readings = []
+        for i in pos:
+            home(pidevice)
+            zero(ser)
+            move(pidevice, i)
+            reading = read(ser)
+            for j in range(len(reading)):
+                if reading[j] is None:
+                    reading[j] = 0
+
+            #print(f"Hexapod    {i}: {position(pidevice)}\n"
+            #      f"Indicators {i}: {reading}")
+            print(f"Hexapod:    {i}\n"
+                  f"Indicators: {reading}")
+            readings.append(reading)
 
 
-def transform(pidevice, direction):
-    """
-    Command the hexapod to move to its home position.
-    Record the values of X, Y, and Z.
-    Command the hexapod to move 500 microns in x-prime.
-    Record the values of X, Y, and Z.
-    Return the hexapod to its home position.
-    Repeat for y-prime and z-prime.
-    """
-    home(pidevice)
-    pidevice.MOV({direction: 0.500})
-    print(pidevice.qPOS())
-    sleep(1)
+def get_angles(readings):
+    for i in readings:
+        angle_xx = np.arctan(i[0]/0.5)
+        angle_yy = np.arctan(i[1]/0.5)
+        angle_zz = np.arctan(i[2]/0.5)
+        angle_xy = angle_xx+angle_yy
+        angle_xz = angle_xx+angle_zz
+        angle_yz = angle_yy+angle_zz
 
-    home(pidevice)
+        angles_aa = [angle_xx, angle_yy, angle_zz]
+        angles_ab = [angle_xy, angle_xz, angle_yz]
+
+        angles_aa = [np.rad2deg(i) for i in angles_aa]
+        angles_ab = [np.rad2deg(i) for i in angles_ab]
+
+        print(f"{angles_aa}\n"
+              f"{angles_ab}\n")
 
 
-with GCSDevice("C-184") as pidevice:
-    pidevice.InterfaceSetupDlg()
-    transform(pidevice, "X")
-    transform(pidevice, "Y")
-    transform(pidevice, "Z")
+get_angles(readings)
+
