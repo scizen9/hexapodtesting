@@ -1,74 +1,76 @@
 from pipython import GCSDevice
 from serial import Serial
-from f import home, move, position, zero, read
-import matplotlib.pyplot as plt
-import statistics
+from time import sleep
 import numpy as np
 
-axis = "x'"
-increment = 0.4  # microns
-start = 0  # microns
-stop = 500  # microns
+from f import home, zero, move, read, position
+from transform import indicator_to_hexapod
 
-increment *= 10
-start *= 10
-stop *= 10
+radius = 0.002
 
 with GCSDevice() as pidevice:
     with Serial("/dev/ttyACM0", 115200) as ser:
         pidevice.ConnectRS232("/dev/ttyUSB0", 115200)
-
-        readings = []
+    
+        home(pidevice)
+        sleep(1)
+        
+        x0, y0, x1, y1, ns = [], [], [], [], []
         n = 0
-        while n != 60:
-            home(pidevice)
+        while n != 500:
             zero(ser)
-
-            move(pidevice, [stop/10000, 0, 0])
-
-            m = stop
-            while m != start-increment:
-                move(pidevice, [m/10000, 0, 0])
-                # if m == 0:
-                # readings.append(read(ser)[0]*1000)
-                m -= increment
-
-            readings.append(read(ser)[0]*1000)
+            
+            # a = random.uniform(-radius, radius)
+            # b = np.sqrt(radius**2-a**2)
+            
+            # _ = random.randrange(-1, 1)
+            # if _ < 0:
+            #     b = -b
+            
+            # _ = random.randrange(-1, 1)
+            # if _ < 0:
+            #     x = a
+            #     y = b
+            # else:
+            #     x = b
+            #     y = a
+            
+            mag = np.random.normal(0.0, radius)
+            angle = np.random.uniform(0, np.pi)
+            
+            x = mag*np.cos(angle)
+            y = mag*np.sin(angle)
+            
+            move(pidevice, [x, y, 0])
+            sleep(1)
+            
+            r0 = read(ser)
+            print(r0)
+            r0h = indicator_to_hexapod(r0)
+            
+            pos = position(pidevice)
+            
+            dx = pos[0]-r0h[0]
+            dy = pos[1]-r0h[1]
+            
+            move(pidevice, [-dx, -dy, 0])
+            sleep(1)
+            
+            r1 = read(ser)
+            
+            x0.append(r0[0]*1000)
+            y0.append(r0[1]*1000)
+            
+            x1.append(r1[0]*1000)
+            y1.append(r1[1]*1000)
+            
+            ns.append(n)
+            
             print(n)
             n += 1
 
-mean = statistics.mean(readings)
-std = statistics.stdev(readings)
+print(x0)
+print(y0)
+print(x1)
+print(y1)
 
-increment = increment/10
-start = start/10
-stop = stop/10
-
-print(f"{mean} ± {std}")
-
-ns = range(len(readings))
-
-plt.fill_between(ns, mean-std, mean+std, color="bisque")
-plt.plot(ns, readings, color="blue")
-plt.axhline(mean, color="orange", label="Mean ± StD")
-
-plt.title(f"{axis}-Axis Repeatability Test, {increment} µm Increment")
-# plt.title(f"{axis}-Axis Repeatability Test, {stop} µm Range")
-# plt.title(f"{axis}-Axis Repeatability Test, {start} µm Final Position")
-plt.xlabel("Trial (#)")
-plt.ylabel("Output Distance from Home Position (µm)")
-
-plt.legend()
-plt.tight_layout()
-plt.show()
-
-plt.hist(readings, bins=np.arange(min(readings)-0.05, max(readings)+0.1, 0.1), color="blue")
-
-plt.title(f"{axis}-Axis Repeatability Test, {increment} µm Increment")
-# plt.title(f"{axis}-Axis Repeatability Test, {stop} µm Range")
-# plt.title(f"{axis}-Axis Repeatability Test, {start} µm Final Position")
-plt.xlabel("Output Distance from Home Position (µm)")
-plt.ylabel("Counts")
-
-plt.tight_layout()
-plt.show()
