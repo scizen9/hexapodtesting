@@ -2,6 +2,7 @@ from pipython import GCSDevice
 from serial import Serial
 from time import sleep
 import numpy as np
+import random
 
 from f import home, zero, move, read, position
 from transform import indicator_to_hexapod
@@ -15,25 +16,25 @@ with GCSDevice() as pidevice:
         home(pidevice)
         sleep(1)
         
-        x0, y0, x1, y1, ns = [], [], [], [], []
+        x0, y0, x1, y1, data0, data1, ns = [], [], [], [], [], [], []
         n = 0
         while n != 500:
             zero(ser)
-            
-            # a = random.uniform(-radius, radius)
-            # b = np.sqrt(radius**2-a**2)
-            
-            # _ = random.randrange(-1, 1)
-            # if _ < 0:
-            #     b = -b
-            
-            # _ = random.randrange(-1, 1)
-            # if _ < 0:
-            #     x = a
-            #     y = b
-            # else:
-            #     x = b
-            #     y = a
+            #
+            #a = random.uniform(-radius, radius)
+            #b = np.sqrt(radius**2-a**2)
+            #
+            #_ = random.randrange(-1, 1)
+            #if _ < 0:
+            #    b = -b
+            #
+            #_ = random.randrange(-1, 1)
+            #if _ < 0:
+            #    x = a
+            #    y = b
+            #else:
+            #    x = b
+            #    y = a
             
             mag = np.random.normal(0.0, radius)
             angle = np.random.uniform(0, np.pi)
@@ -57,20 +58,26 @@ with GCSDevice() as pidevice:
             sleep(1)
             
             r1 = read(ser)
+            r1h = indicator_to_hexapod(r1)
             
-            x0.append(r0[0]*1000)
-            y0.append(r0[1]*1000)
+            x0.append(r0h[0]*1000)
+            y0.append(r0h[1]*1000)
+            data0.append(r0)
             
-            x1.append(r1[0]*1000)
-            y1.append(r1[1]*1000)
+            
+            x1.append(r1h[0]*1000)
+            y1.append(r1h[1]*1000)
+            data1.append(r1)
             
             ns.append(n)
             
             print(n)
             n += 1
 
-print(x0)
-print(y0)
-print(x1)
-print(y1)
+#print(x0)
+#print(y0)
+#print(x1)
+#print(y1)
+print(data0)
+print(data1)
 

@@ -6,8 +6,7 @@ import numpy as np
 from f import home, zero, move, read, position
 from transform import indicator_to_hexapod
 
-x, y = [], []
-steps = []
+data, steps = [], []
 
 with GCSDevice() as pidevice:
     with Serial("/dev/ttyACM0", 115200) as ser:
@@ -29,35 +28,27 @@ with GCSDevice() as pidevice:
             move(pidevice, [a/1000, b/1000, 0])
             sleep(1)
             
-            i = read(ser)
-            print(i)
-            h = indicator_to_hexapod(i)
-            
-            pos = position(pidevice)
-            
             step = 0
             while True:
-                x.append(h[0])
-                y.append(h[1])
+                i = read(ser)
+                h = indicator_to_hexapod(i)
+                pos = position(pidevice)
+                
+                print(i)
+                data.append(i)
                 
                 if np.sqrt(h[0]**2+h[1]**2) <= 0.1/1000:
                     break
-                
+
                 move(pidevice, [pos[0]-h[0], pos[1]-h[1], 0])
                 sleep(1)
                 
-                i = read(ser)
-                print(i)
-                h = indicator_to_hexapod(i)
-                
-                pos = position(pidevice)
-
                 step += 1
-            
-            steps.append(step)
 
+            steps.append(step)
+            
+            print(n)
             n += 1
 
-print(x)
-print(y)
+print(data)
 print(steps)

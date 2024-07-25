@@ -13,7 +13,7 @@ with GCSDevice() as pidevice:
     with Serial("/dev/ttyACM0", 115200) as ser:
         pidevice.ConnectRS232("/dev/ttyUSB0", 115200)
 
-        x, y, z, ns = [], [], [], []
+        readings, ns = [], []
         n = start
         while n != stop+increment:
             home(pidevice)
@@ -24,8 +24,8 @@ with GCSDevice() as pidevice:
 
             r0 = read(ser)
 
-            # move(pidevice, [n/1000, 0, 0])
-            move(pidevice, [0, n/1000, 0])
+            move(pidevice, [n/1000, 0, 0])
+            # move(pidevice, [0, n/1000, 0])
             # move(pidevice, [0, 0, n/1000])
             sleep(1)
 
@@ -51,25 +51,4 @@ print(x)
 print(y)
 print(z)
 print(n)
-
-
-def f(x, m, b):
-    return m*x+b
-
-
-axes = [x, y, z]
-for i in axes:
-    m, b = np.polyfit(ns, i, 1)
-    print(m, b)
-    
-    predict = []
-    p = 0
-    while p != len(ns):
-        n, j = ns[p], i[p]
-        predict.append(f(n, m, b))
-        p += 1
-
-    corr_matrix = np.corrcoef(i, predict)
-    corr = corr_matrix[0, 1]
-    print(corr**2)
 
