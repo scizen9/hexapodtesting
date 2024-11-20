@@ -1,9 +1,8 @@
+from time import sleep
 from pipython import GCSDevice
 from serial import Serial
-import numpy as np
-from time import sleep
 
-from f import home, move, position, zero, read
+from f import home, move, zero, read
 
 start = -30  # μm
 stop = 30

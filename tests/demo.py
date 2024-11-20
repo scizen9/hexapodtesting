@@ -1,6 +1,6 @@
-from pipython import GCSDevice
-from serial import Serial
 from time import sleep
+from serial import Serial
+from pipython import GCSDevice
 
 from f import home, zero, position, read, move
 
@@ -15,9 +15,9 @@ with GCSDevice() as pidevice:
             print("Slewing to Home...")
             home(pidevice)
             print("Homed!")
-            
+
             sleep(1)
-            
+
             print("Zeroing Indicators...")
             zero(ser)
             print("Zeroed!\n"

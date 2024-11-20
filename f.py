@@ -5,7 +5,8 @@ def home(pidevice):
     """
     Home hexapod.
     """
-    pitools.moveandwait(pidevice, {"x": 0, "y": 0, "z": 0})  # Script stops until hexapod reaches position. Positions in millimeters (mm).
+    pitools.moveandwait(pidevice, {"x": 0, "y": 0, "z": 0})
+    # Script stops until hexapod reaches position. Positions in millimeters (mm).
 
 
 def move(pidevice, position):
