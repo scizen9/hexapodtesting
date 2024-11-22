@@ -27,5 +27,3 @@ def indicator_to_hexapod(vector):
     hexapod = rotation_matrix_inverse*(vector-translation_vector)
     hexapod = hexapod.tolist()
     return sum(hexapod, [])
-
-
