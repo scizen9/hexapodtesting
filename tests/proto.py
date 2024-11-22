@@ -8,6 +8,7 @@ PORT = 50000
 
 with GCSDevice() as pidevice:
     pidevice.ConnectTCPIP(IP, ipport=PORT)  # Hexapod connection.
+    pidevice.InterfaceSetupDlg()
     print(f"Hexapod Position: {position(pidevice)}")
 
     _ = input("Home? (y/n): ")
